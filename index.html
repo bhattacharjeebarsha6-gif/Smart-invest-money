@@ -12,19 +12,14 @@
         
         .app-container { width: 100%; max-width: 480px; background: white; height: 100vh; display: flex; flex-direction: column; position: relative; overflow: hidden; }
         
-        /* Auth Screens */
         .auth-screen { position: absolute; top:0; left:0; width:100%; height:100%; background:white; z-index:1000; display:flex; flex-direction:column; justify-content:center; padding:30px; }
         .hidden { display: none !important; }
         
-        /* Chat Screen */
-        .chat-screen { position: absolute; top:0; left:0; width:100%; height:100%; background:white; z-index:800; display:none; flex-direction:column; }
-        .chat-header { background:#6c5ce7; padding:15px; color:white; display:flex; align-items:center; gap:10px; }
-        .chat-body { flex:1; overflow-y:auto; padding:15px; background:#f0f2f5; display:flex; flex-direction:column; gap:10px; }
-        .chat-footer { padding:10px; border-top:1px solid #ddd; display:flex; gap:10px; }
-        
-        .msg { padding: 10px 15px; border-radius: 15px; max-width: 75%; font-size: 14px; word-wrap: break-word; }
-        .msg.user { background: #6c5ce7; color: white; align-self: flex-end; }
-        .msg.admin { background: white; color: #333; align-self: flex-start; border: 1px solid #ddd; }
+        /* Modal Styles */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; display: none; justify-content: center; align-items: center; }
+        .modal-box { background: white; width: 90%; max-width: 400px; padding: 20px; border-radius: 15px; text-align: center; position: relative; animation: popUp 0.3s; }
+        @keyframes popUp { from {transform: scale(0.8); opacity: 0;} to {transform: scale(1); opacity: 1;} }
+        .detail-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; font-size: 15px; }
 
         /* Main Styles */
         .header { background: #6c5ce7; padding: 15px 20px; color: white; display: flex; justify-content: space-between; align-items: center; }
@@ -37,6 +32,20 @@
         input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin: 8px 0; font-size: 16px; outline: none; background: #f9f9f9; }
         button { width: 100%; padding: 12px; border: none; background: #6c5ce7; color: white; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; }
         
+        /* Plan Card */
+        .plan-card { display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, #ffffff 0%, #f3f0ff 100%); border: 1px solid #e0d4fc; padding: 15px; border-radius: 10px; margin-bottom: 10px; cursor: pointer; transition: 0.2s; }
+        .plan-card:active { transform: scale(0.98); }
+
+        .history-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; font-size: 14px; }
+        .status-pending { color: orange; font-weight:bold; }
+        .status-approved { color: green; font-weight:bold; }
+        .status-rejected { color: red; font-weight:bold; }
+
+        /* Referral Box Styles */
+        .ref-box { background: linear-gradient(135deg, #6c5ce7, #a29bfe); color: white; text-align: center; }
+        .ref-locked { background: #bdc3c7; color: #7f8c8d; text-align: center; opacity: 0.8; }
+        .ref-code-display { background: rgba(255,255,255,0.2); padding: 10px; border-radius: 5px; margin-top: 10px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+
         .nav { position: absolute; bottom: 0; width: 100%; height: 70px; background: white; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #eee; z-index: 500; }
         .nav-item { text-align: center; color: #95a5a6; font-size: 11px; width: 100%; padding: 10px; }
         .nav-item.active { color: #6c5ce7; font-weight: bold; }
@@ -47,7 +56,7 @@
 
 <div class="app-container">
     
-    <!-- 1. Login Screen -->
+    <!-- Login Screen -->
     <div id="login-screen" class="auth-screen">
         <h2 style="text-align:center; color:#6c5ce7;">লগিন করুন</h2>
         <input type="number" id="log-phone" placeholder="মোবাইল নাম্বার">
@@ -56,34 +65,41 @@
         <p style="text-align:center; margin-top:20px;">একাউন্ট নেই? <a href="#" onclick="showRegister()" style="color:#6c5ce7; font-weight:bold;">রেজিস্টার করুন</a></p>
     </div>
 
-    <!-- 2. Register Screen -->
+    <!-- Register Screen -->
     <div id="register-screen" class="auth-screen hidden">
         <h2 style="text-align:center; color:#6c5ce7;">একাউন্ট খুলুন</h2>
         <input type="text" id="reg-name" placeholder="আপনার নাম">
         <input type="number" id="reg-phone" placeholder="মোবাইল নাম্বার">
         <input type="email" id="reg-email" placeholder="ইমেইল এড্রেস">
         <input type="password" id="reg-pass" placeholder="গোপন পাসওয়ার্ড">
-        <input type="number" id="reg-refer" placeholder="রেফার কোড (Optional)">
+        <input type="number" id="reg-ref" placeholder="রেফার কোড (যদি থাকে)">
         <button onclick="registerUser()">রেজিস্টার</button>
         <p style="text-align:center; margin-top:20px;">একাউন্ট আছে? <a href="#" onclick="showLogin()" style="color:#6c5ce7; font-weight:bold;">লগিন করুন</a></p>
     </div>
 
-    <!-- 3. Help Chat Screen -->
-    <div id="chat-screen" class="chat-screen">
-        <div class="chat-header">
-            <i class="fas fa-arrow-left" onclick="closeChat()" style="cursor:pointer; font-size:20px;"></i>
-            <span>এডমিন সাপোর্ট</span>
-        </div>
-        <div id="chat-body" class="chat-body">
-            <div class="msg admin">হ্যালো! কিভাবে সাহায্য করতে পারি?</div>
-        </div>
-        <div class="chat-footer">
-            <input type="text" id="chat-inp" placeholder="আপনার সমস্যা লিখুন..." style="margin:0; flex:1;">
-            <button onclick="sendChat()" style="width:auto; padding:10px 20px;"><i class="fas fa-paper-plane"></i></button>
+    <!-- PLAN DETAILS MODAL -->
+    <div id="plan-modal" class="modal-overlay">
+        <div class="modal-box">
+            <h3 style="color:#6c5ce7; margin-bottom:15px;">প্ল্যান ডিটেইলস</h3>
+            <div class="detail-row"><span>ইনভেস্ট অ্যামাউন্ট:</span><span id="m-price" style="font-weight:bold;">0</span></div>
+            <div class="detail-row"><span>ডেইলি প্রফিট:</span><span id="m-daily" style="font-weight:bold; color:green;">0</span></div>
+            <div class="detail-row"><span>মেয়াদ (Duration):</span><span>৩০ দিন</span></div>
+            
+            <!-- Double Return Info -->
+            <div class="detail-row" style="background:#e8f6ef; padding:8px; border-radius:5px; border:1px solid #2ecc71;">
+                <span>৩০ দিন পর ফেরত:</span>
+                <span style="color:green; font-weight:bold;">২ গুন (Double)</span>
+            </div>
+            <p style="font-size:11px; color:#e74c3c; margin-top:5px;">টাকা ৩০ দিনের জন্য লক থাকবে।</p>
+            
+            <div style="margin-top:20px; display:flex; gap:10px;">
+                <button onclick="closeModal()" style="background:#e74c3c;">Cancel</button>
+                <button onclick="confirmBuy()" style="background:#27ae60;">Confirm Invest</button>
+            </div>
         </div>
     </div>
 
-    <!-- 4. Main App -->
+    <!-- Main App -->
     <div id="main-app" class="hidden" style="height: 100%; flex-direction: column;">
         <div class="header">
             <div><small>ব্যালেন্স</small><h2 id="header-balance">₹ 0</h2></div>
@@ -97,26 +113,26 @@
                     <div><h4 style="color: #f39c12; margin:0;">ডেইলি বোনাস</h4><small>প্রতিদিন ১০ টাকা</small></div>
                     <button onclick="claimBonus()" style="width: auto; background: #f39c12; padding: 5px 15px; color: white; border-radius:20px;">Claim</button>
                 </div>
-
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
-                    <div onclick="openPage('deposit')" class="card" style="text-align: center; background: #e8f6ef; border: 1px solid #2ecc71; color: #27ae60; cursor:pointer;">
+                    <div onclick="navTo('deposit')" class="card" style="text-align: center; background: #e8f6ef; border: 1px solid #2ecc71; color: #27ae60; cursor:pointer;">
                         <i class="fas fa-plus-circle" style="font-size: 24px;"></i><br>ডিপোজিট
                     </div>
-                    <div onclick="openPage('withdraw')" class="card" style="text-align: center; background: #ffebee; border: 1px solid #e74c3c; color: #c0392b; cursor:pointer;">
+                    <div onclick="navTo('withdraw')" class="card" style="text-align: center; background: #ffebee; border: 1px solid #e74c3c; color: #c0392b; cursor:pointer;">
                         <i class="fas fa-download" style="font-size: 24px;"></i><br>উত্তোলন
                     </div>
                 </div>
-                <h4>একটিভ প্ল্যান</h4>
-                <div id="active-investments"><p style="text-align:center; color:#aaa;">খালি</p></div>
+                <h4>আমার ইনভেস্টমেন্ট</h4>
+                <div id="active-investments"><p style="text-align:center; color:#aaa;">কোনো প্ল্যান কেনা নেই</p></div>
             </div>
 
             <!-- Deposit -->
             <div id="deposit" class="page">
                 <h3>টাকা জমা করুন</h3>
                 <div class="card">
+                    <p style="font-size:13px; color:#555; margin-bottom:10px;">মিনিমাম ডিপোজিট ১০০০ টাকা। ডিপোজিট করলে একাউন্ট ভেরিফাই হবে এবং রেফার অপশন চালু হবে।</p>
                     <input type="number" id="dep-amount" placeholder="টাকার পরিমাণ">
-                    <button onclick="payNow()" style="background: #27ae60; margin-bottom: 10px;">UPI Payment</button>
-                    <input type="text" id="dep-utr" placeholder="UTR Number">
+                    <button onclick="payNow()" style="background: #27ae60; margin-bottom: 10px;">Pay with UPI</button>
+                    <input type="text" id="dep-utr" placeholder="UTR Number দিন">
                     <button onclick="submitDeposit()" style="background: #34495e;">Submit</button>
                 </div>
             </div>
@@ -125,36 +141,70 @@
             <div id="withdraw" class="page">
                 <h3>টাকা উত্তোলন</h3>
                 <div class="card">
-                    <p style="text-align:center;">ব্যালেন্স: <span id="with-bal">0</span></p>
-                    <input type="number" id="with-amount" placeholder="পরিমাণ">
-                    <input type="text" id="with-upi" placeholder="বিকাশ/নগদ নাম্বার">
-                    <button onclick="submitWithdraw()" style="background: #e74c3c;">Withdraw</button>
-                </div>
-            </div>
-
-            <!-- Profile -->
-            <div id="profile" class="page">
-                <div class="card" style="text-align: center;">
-                    <i class="fas fa-user-circle" style="font-size: 60px; color: #ddd;"></i>
-                    <h3 id="profile-name" style="margin-top: 10px;">User</h3>
-                    <p id="profile-phone">...</p>
-                    
-                    <!-- Help Button -->
-                    <button onclick="openChat()" style="background: #3498db; margin-top:10px; border-radius:20px;">
-                        <i class="fas fa-headset"></i> হেল্প সেন্টার (Live Chat)
-                    </button>
-
-                    <div style="margin-top: 20px; background: #f8f9fa; padding: 15px; border-radius: 10px; text-align: left;">
-                        <p style="color: #6c5ce7; font-weight: bold;">রেফার কোড: <span id="my-refer-code" style="color:black">...</span></p>
+                    <div style="text-align:center; margin-bottom:10px; border-bottom:1px solid #eee;">
+                        <small>বর্তমান ব্যালেন্স</small>
+                        <h1 id="with-bal" style="color:#e74c3c;">₹ 0</h1>
                     </div>
-
-                    <button onclick="location.reload()" style="background: #636e72; margin-top: 20px;">লগ আউট</button>
+                    <label style="font-size:12px; font-weight:bold;">টাকার পরিমাণ</label>
+                    <input type="number" id="with-amount" placeholder="Minimum ₹100">
+                    <label style="font-size:12px; font-weight:bold;">আপনার UPI ID</label>
+                    <input type="text" id="with-upi" placeholder="example@upi">
+                    <button onclick="submitWithdraw()" style="background: #e74c3c; margin-top:10px;">
+                        <i class="fas fa-paper-plane"></i> রিকোয়েস্ট পাঠান
+                    </button>
+                </div>
+                <h4>হিস্টোরি</h4>
+                <div class="card" id="withdraw-history">
+                    <p style="text-align:center; color:#aaa;">লোড হচ্ছে...</p>
                 </div>
             </div>
 
             <!-- Invest -->
             <div id="invest" class="page">
+                <h3 style="margin-bottom:10px;">ভিআইপি প্ল্যানস</h3>
                 <div id="plans-container"></div>
+            </div>
+
+            <!-- Profile (With Support) -->
+            <div id="profile" class="page">
+                <div class="card" style="text-align: center;">
+                    <i class="fas fa-user-circle" style="font-size: 60px; color: #ddd;"></i>
+                    <h3 id="profile-name" style="margin-top: 10px;">User</h3>
+                    <p id="profile-phone">...</p>
+                    <button onclick="location.reload()" style="background: #636e72; margin-top: 10px; width:auto; padding:5px 20px;">লগ আউট</button>
+                </div>
+                
+                <!-- SUPPORT SYSTEM -->
+                <div class="card">
+                    <h4 style="margin-bottom:10px; color:#2d3436;">হেল্পলাইন & সাপোর্ট</h4>
+                    <p style="font-size:12px; color:#7f8c8d; margin-bottom:10px;">যেকোনো প্রয়োজনে আমাদের সাথে যোগাযোগ করুন।</p>
+                    <div style="display: flex; gap: 10px;">
+                        <button onclick="openSupport('wa')" style="background: #25D366; flex:1;">
+                            <i class="fab fa-whatsapp"></i> WhatsApp
+                        </button>
+                        <button onclick="openSupport('tg')" style="background: #0088cc; flex:1;">
+                            <i class="fab fa-telegram-plane"></i> Telegram
+                        </button>
+                    </div>
+                </div>
+
+                <!-- REFERRAL SECTION (LOCKED) -->
+                <div id="ref-locked-view" class="card ref-locked">
+                    <i class="fas fa-lock" style="font-size:30px; margin-bottom:10px;"></i>
+                    <h3>রেফার অপশন বন্ধ আছে</h3>
+                    <p style="font-size:13px; margin-top:5px;">রেফার ইনকাম চালু করার জন্য আপনাকে প্রথমে ডিপোজিট করতে হবে।</p>
+                </div>
+
+                <!-- REFERRAL SECTION (UNLOCKED) -->
+                <div id="ref-unlocked-view" class="card ref-box hidden">
+                    <h3>📢 রেফার করুন, আয় করুন</h3>
+                    <p style="font-size:13px; margin-top:5px; opacity:0.9;">আপনার বন্ধু ১০০০ টাকা ডিপোজিট করলে আপনি সাথে সাথে <b>২০০ টাকা</b> বোনাস পাবেন!</p>
+                    <div class="ref-code-display" onclick="copyRef()">
+                        <span id="my-ref-code" style="font-weight:bold;">Loading...</span>
+                        <i class="fas fa-copy"></i>
+                    </div>
+                    <small style="display:block; margin-top:5px;">কপি করতে ক্লিক করুন</small>
+                </div>
             </div>
         </div>
 
@@ -169,9 +219,8 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-    import { getDatabase, ref, set, onValue, update, push, remove, get } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
+    import { getDatabase, ref, set, onValue, update, push, get, runTransaction } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
 
-    // --- NEW CONFIGURATION ---
     const firebaseConfig = {
       apiKey: "AIzaSyC_7lvHpyLYGCd0EO9YsyM_4U-GnACA3pg",
       authDomain: "smart-invest-money.firebaseapp.com",
@@ -187,238 +236,283 @@
     const db = getDatabase(app);
     let currentUser = null;
     let userData = {};
+    let selectedPlan = null;
 
-    // 1. SWITCHING SCREENS
-    window.showRegister = () => {
-        document.getElementById('login-screen').classList.add('hidden');
-        document.getElementById('register-screen').classList.remove('hidden');
-    }
-    window.showLogin = () => {
-        document.getElementById('register-screen').classList.add('hidden');
-        document.getElementById('login-screen').classList.remove('hidden');
-    }
+    window.showRegister = () => { document.getElementById('login-screen').classList.add('hidden'); document.getElementById('register-screen').classList.remove('hidden'); }
+    window.showLogin = () => { document.getElementById('register-screen').classList.add('hidden'); document.getElementById('login-screen').classList.remove('hidden'); }
 
-    // 2. REGISTRATION LOGIC
+    // Register with Referral Logic
     window.registerUser = async function() {
         const name = document.getElementById('reg-name').value;
         const phone = document.getElementById('reg-phone').value;
         const email = document.getElementById('reg-email').value;
         const pass = document.getElementById('reg-pass').value;
-        const refer = document.getElementById('reg-refer').value;
+        const refCode = document.getElementById('reg-ref').value;
 
-        if(!name || !phone || !email || !pass) return alert("দয়া করে সব তথ্য পূরণ করুন");
-        if(phone.length < 10) return alert("সঠিক ১০ সংখ্যার মোবাইল নাম্বার দিন");
-
-        const userRef = ref(db, 'users/' + phone);
+        if(!name || !phone || !pass) return alert("সব তথ্য দিন");
         
-        try {
-            const snapshot = await get(userRef);
-            if(snapshot.exists()) {
-                alert("এই নাম্বার দিয়ে আগেই একাউন্ট খোলা আছে। দয়া করে লগিন করুন।");
-                showLogin();
-            } else {
-                let data = {
-                    name: name,
-                    phone: phone,
-                    email: email,
-                    password: pass,
-                    balance: 0,
-                    hasDeposited: false
-                };
-                if(refer && refer !== phone) {
-                    data.referredBy = refer;
-                    data.referralBonusPaid = false;
-                }
-                
-                await set(userRef, data);
-                alert("রেজিস্ট্রেশন সফল! এখন লগিন করুন।");
-                showLogin();
-            }
-        } catch (error) {
-            console.error(error);
-            alert("সমস্যা হয়েছে: " + error.message);
+        let referrer = "";
+        if(refCode) {
+            const refSnap = await get(ref(db, 'users/' + refCode));
+            if(refSnap.exists()) { referrer = refCode; } 
+            else { return alert("ভুল রেফার কোড!"); }
         }
+
+        await set(ref(db, 'users/' + phone), { 
+            name, phone, email, password: pass, balance: 0, 
+            hasDeposited: false, referrer: referrer, referralBonusPaid: false 
+        });
+        
+        alert("রেজিস্ট্রেশন সফল!"); showLogin();
     }
 
-    // 3. LOGIN LOGIC
     window.loginUser = async function() {
         const phone = document.getElementById('log-phone').value;
         const pass = document.getElementById('log-pass').value;
-
-        if(!phone || !pass) return alert("মোবাইল নাম্বার ও পাসওয়ার্ড দিন");
-
-        const userRef = ref(db, 'users/' + phone);
-
-        try {
-            const snapshot = await get(userRef);
-            if(snapshot.exists()) {
-                const data = snapshot.val();
-                // Simple password check
-                if(data.password == pass) {
-                    currentUser = phone;
-                    userData = data;
-                    document.getElementById('login-screen').classList.add('hidden');
-                    document.getElementById('main-app').classList.remove('hidden');
-                    document.getElementById('main-app').style.display = 'flex';
-                    
-                    // Start Listening for Live Updates
-                    startLiveUpdates(phone);
-                    loadApp();
-                } else {
-                    alert("ভুল পাসওয়ার্ড দিয়েছেন!");
-                }
-            } else {
-                alert("এই নাম্বারে কোনো একাউন্ট নেই। রেজিস্টার করুন।");
-            }
-        } catch (error) {
-            console.error(error);
-            alert("লগিন সমস্যা: " + error.message);
-        }
+        const snap = await get(ref(db, 'users/' + phone));
+        
+        if(snap.exists() && snap.val().password == pass) {
+            currentUser = phone;
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('main-app').classList.remove('hidden');
+            document.getElementById('main-app').style.display = 'flex';
+            startLiveUpdates(phone);
+            renderPlans();
+        } else { alert("ভুল তথ্য!"); }
     }
 
-    // LIVE UPDATES
     function startLiveUpdates(phone) {
         onValue(ref(db, 'users/' + phone), (snap) => {
-            if(snap.exists()) {
-                userData = snap.val();
-                updateUI();
+            userData = snap.val();
+            document.getElementById('header-balance').innerText = "₹ " + userData.balance;
+            document.getElementById('with-bal').innerText = "₹ " + userData.balance;
+            document.getElementById('profile-name').innerText = userData.name;
+            document.getElementById('profile-phone').innerText = userData.phone;
+            document.getElementById('my-ref-code').innerText = userData.phone; 
+
+            // LOGIC FOR DEPOSIT VERIFICATION & UNLOCKING FEATURES
+            if(userData.hasDeposited) {
+                document.getElementById('status-badge').innerText = "Verified";
+                document.getElementById('status-badge').style.background = "#2ecc71";
+                
+                // Unlock Referral Section
+                document.getElementById('ref-locked-view').classList.add('hidden');
+                document.getElementById('ref-unlocked-view').classList.remove('hidden');
+
+                // Instant Referral Bonus Check for the Referrer
+                if(userData.referrer && userData.referralBonusPaid === false) {
+                    processReferralReward(userData.referrer, phone);
+                }
+            } else {
+                // Ensure Referral is Locked
+                document.getElementById('ref-locked-view').classList.remove('hidden');
+                document.getElementById('ref-unlocked-view').classList.add('hidden');
             }
+
+            loadInvestments(userData.investments);
         });
-    }
 
-    function loadApp() {
-        renderPlans();
-        updateUI();
-        initChat();
-    }
-
-    function updateUI() {
-        document.getElementById('header-balance').innerText = "₹ " + (userData.balance||0);
-        document.getElementById('with-bal').innerText = (userData.balance||0);
-        document.getElementById('profile-name').innerText = userData.name;
-        document.getElementById('profile-phone').innerText = userData.phone;
-        document.getElementById('my-refer-code').innerText = userData.phone;
-
-        const badge = document.getElementById('status-badge');
-        if(userData.hasDeposited) {
-            badge.innerText = "Verified";
-            badge.style.background = "#2ecc71";
-        }
-        loadInvestments(userData.investments);
-    }
-
-    // --- OTHER FEATURES ---
-
-    // Chat
-    window.openChat = () => {
-        document.getElementById('chat-screen').style.display = 'flex';
-        const b = document.getElementById('chat-body');
-        b.scrollTop = b.scrollHeight;
-    }
-    window.closeChat = () => document.getElementById('chat-screen').style.display = 'none';
-
-    function initChat() {
-        if(!currentUser) return;
-        onValue(ref(db, 'support_chats/' + currentUser), (snap) => {
-            const body = document.getElementById('chat-body');
-            body.innerHTML = '<div class="msg admin">হ্যালো! কিভাবে সাহায্য করতে পারি?</div>';
-            if(snap.exists()) {
+        onValue(ref(db, 'withdrawals'), (snap) => {
+            const list = document.getElementById('withdraw-history');
+            list.innerHTML = "";
+            if(snap.exists()){
                 snap.forEach(child => {
-                    const msg = child.val();
-                    body.innerHTML += `<div class="msg ${msg.sender}">${msg.text}</div>`;
+                    const d = child.val();
+                    if(d.user === currentUser) {
+                        let statusClass = d.status === 'pending' ? 'status-pending' : (d.status === 'approved' ? 'status-approved' : 'status-rejected');
+                        list.innerHTML += `<div class="history-item"><div><b>₹${d.amount}</b><br><small>To: ${d.upi}</small></div><div class="${statusClass}">${d.status}</div></div>`;
+                    }
                 });
-                body.scrollTop = body.scrollHeight;
-            }
+            } else { list.innerHTML = "<p style='text-align:center;'>লেনদেন নেই</p>"; }
         });
     }
 
-    window.sendChat = function() {
-        const txt = document.getElementById('chat-inp').value;
-        if(!txt) return;
-        push(ref(db, 'support_chats/' + currentUser), {
-            sender: 'user',
-            text: txt,
-            time: Date.now()
-        });
-        document.getElementById('chat-inp').value = '';
+    async function processReferralReward(referrerPhone, newUserId) {
+        await update(ref(db, 'users/' + newUserId), { referralBonusPaid: true });
+        const referrerRef = ref(db, 'users/' + referrerPhone + '/balance');
+        runTransaction(referrerRef, (currentBalance) => { return (currentBalance || 0) + 200; });
     }
 
-    // Plans
+    window.copyRef = () => {
+        navigator.clipboard.writeText(document.getElementById('my-ref-code').innerText);
+        alert("কপি হয়েছে!");
+    }
+
+    // Support Function
+    window.openSupport = (type) => {
+        // এখানে আপনার নাম্বার ও ইউজারনেম দিন
+        if(type === 'wa') window.location.href = 'https://wa.me/+910000000000'; // আপনার নাম্বার দিন
+        if(type === 'tg') window.location.href = 'https://t.me/yourusername'; // আপনার টেলিগ্রাম ইউজারনেম
+    }
+
+    // --- PLANS & INVESTMENT LOGIC ---
     const plans = [
-        { p: 1000, d: 25 }, { p: 2000, d: 55 }, { p: 5000, d: 140 }, 
-        { p: 10000, d: 300 }, { p: 25000, d: 800 }, { p: 50000, d: 1700 }
+        { id:1, price: 1000, daily: 50, desc: "Basic Plan" },
+        { id:2, price: 2000, daily: 110, desc: "Standard Plan" },
+        { id:3, price: 5000, daily: 300, desc: "Silver Plan" },
+        { id:4, price: 10000, daily: 650, desc: "Gold Plan" },
+        { id:5, price: 25000, daily: 1700, desc: "Platinum Plan" },
+        { id:6, price: 50000, daily: 3500, desc: "Diamond Plan" },
+        { id:7, price: 100000, daily: 7500, desc: "Partner Plan" }
     ];
 
-    function renderPlans() {
+    window.renderPlans = () => {
         const c = document.getElementById('plans-container');
         c.innerHTML = "";
-        plans.forEach(i => {
-            c.innerHTML += `<div class="card" style="border-left:5px solid #6c5ce7; display:flex; justify-content:space-between; align-items:center;">
-                <div><b>₹${i.p}</b><br><small>৩০ দিন</small></div>
-                <div style="text-align:right; color:green;"><b>+₹${i.d}</b>/day</div>
-                <button onclick="buyPlan(${i.p},${i.d})" style="padding:5px 10px; font-size:12px;">Buy</button>
+        plans.forEach(p => {
+            c.innerHTML += `
+            <div class="plan-card" onclick="openPlanDetails(${p.id})">
+                <div>
+                    <h4 style="color:#6c5ce7;">${p.desc}</h4>
+                    <h2 style="color:#2d3436;">₹${p.price}</h2>
+                    <small style="color:#aaa;">৩০ দিনের জন্য</small>
+                </div>
+                <div style="text-align:right;">
+                    <p style="color:green; font-weight:bold;">+₹${p.daily}/Day</p>
+                    <button style="padding:5px 15px; margin-top:5px; font-size:12px;">Details</button>
+                </div>
             </div>`;
         });
-        window.buyPlan = buyPlan;
     }
 
-    // Financial Actions
-    window.payNow = () => {
-        const amt = document.getElementById('dep-amount').value;
-        if(!amt) return alert("টাকার পরিমাণ দিন");
-        window.location.href = `upi://pay?pa=barshabhattacharjee019-1@okaxis&pn=InvestApp&am=${amt}&cu=INR`;
+    window.openPlanDetails = (id) => {
+        const plan = plans.find(p => p.id === id);
+        selectedPlan = plan;
+        document.getElementById('m-price').innerText = "₹" + plan.price;
+        document.getElementById('m-daily').innerText = "₹" + plan.daily;
+        document.getElementById('plan-modal').style.display = 'flex';
     }
 
-    window.submitDeposit = () => {
-        const amt = parseInt(document.getElementById('dep-amount').value);
-        const utr = document.getElementById('dep-utr').value;
-        if(!utr || !amt) return alert("সব তথ্য দিন");
-        push(ref(db, 'deposits'), { user: currentUser, amount: amt, utr: utr, status: 'pending' });
-        alert("রিকোয়েস্ট পাঠানো হয়েছে!"); navTo('home');
-    }
+    window.closeModal = () => { document.getElementById('plan-modal').style.display = 'none'; selectedPlan = null; }
 
-    window.submitWithdraw = () => {
-        if(!userData.hasDeposited) return alert("আগে ডিপোজিট করুন");
-        const amt = parseInt(document.getElementById('with-amount').value);
-        const upi = document.getElementById('with-upi').value;
-        if(amt > userData.balance) return alert("ব্যালেন্স নেই");
-        update(ref(db, 'users/' + currentUser), { balance: userData.balance - amt });
-        push(ref(db, 'withdrawals'), { user: currentUser, amount: amt, upi: upi, status: 'pending' });
-        alert("রিকোয়েস্ট পাঠানো হয়েছে!"); navTo('home');
+    window.confirmBuy = () => {
+        if(!selectedPlan) return;
+        if(userData.balance < selectedPlan.price) {
+            alert("আপনার ব্যালেন্স পর্যাপ্ত নেই। দয়া করে ডিপোজিট করুন।");
+            return;
+        }
+        const newBal = userData.balance - selectedPlan.price;
+        
+        // Calculate Expiry Date (Now + 30 Days)
+        const expiryDate = new Date();
+        expiryDate.setDate(expiryDate.getDate() + 30);
+
+        update(ref(db, 'users/'+currentUser), { balance: newBal });
+        
+        push(ref(db, 'users/'+currentUser+'/investments'), {
+            planName: selectedPlan.desc,
+            amount: selectedPlan.price,
+            dailyProfit: selectedPlan.daily,
+            lastClaim: '',
+            purchaseDate: new Date().toDateString(),
+            expiryDate: expiryDate.toISOString(), // Store exact expiry time
+            principalReturned: false
+        });
+        alert("প্ল্যান কেনা সফল হয়েছে! ৩০ দিন পর আপনি দ্বিগুণ টাকা (Double) ফেরত পাবেন।");
+        closeModal();
+        navTo('home');
     }
 
     window.claimBonus = () => {
-        if(!userData.hasDeposited) return alert("আগে ডিপোজিট করুন");
+        if(!userData.hasDeposited) {
+            alert("দুঃখিত! ডেইলি বোনাস পাওয়ার জন্য আপনাকে অন্তত একবার ডিপোজিট করে একাউন্ট ভেরিফাই করতে হবে।");
+            return;
+        }
         const t = new Date().toDateString();
-        if(userData.lastBonus === t) return alert("আজকেরটা নেওয়া শেষ");
-        update(ref(db, 'users/' + currentUser), { balance: userData.balance + 10, lastBonus: t });
-        alert("১০ টাকা যোগ হয়েছে!");
+        if(userData.lastBonus === t) return alert("আজকের বোনাস নেওয়া হয়েছে। কাল আবার চেষ্টা করুন।");
+        update(ref(db, 'users/'+currentUser), { balance: userData.balance + 10, lastBonus: t });
+        alert("১০ টাকা বোনাস যোগ হয়েছে!");
     }
 
-    function buyPlan(price, daily) {
-        if((userData.balance||0) < price) return alert("ব্যালেন্স নেই");
-        update(ref(db, 'users/' + currentUser), { balance: userData.balance - price });
-        const u = new Date(); u.setDate(u.getDate()+30);
-        push(ref(db, 'users/'+currentUser+'/investments'), { amount:price, dailyProfit:daily, unlockDate:u.toDateString(), lastClaim:'' });
-        alert("সফল হয়েছে!"); navTo('home');
+    window.claimProfit = (key, daily) => {
+        // --- RESTRICTION: CHECK IF DEPOSITED ---
+        if(!userData.hasDeposited) {
+            alert("দুঃখিত! লাভ ক্লেইম করার জন্য আপনাকে অন্তত একবার ডিপোজিট করতে হবে।");
+            return;
+        }
+        // ---------------------------------------
+
+        const today = new Date().toDateString();
+        update(ref(db, 'users/'+currentUser+'/investments/'+key), { lastClaim: today });
+        update(ref(db, 'users/'+currentUser), { balance: userData.balance + daily });
+        alert("আজকের লাভ যোগ হয়েছে!");
     }
 
     function loadInvestments(d) {
-        const div = document.getElementById('active-investments');
+        const div = document.getElementById('active-investments'); 
         div.innerHTML = "";
-        if(!d) { div.innerHTML = "<p style='text-align:center'>খালি</p>"; return; }
+        if(!d) { div.innerHTML = "<p style='text-align:center; color:#aaa;'>খালি</p>"; return; }
+        
+        const today = new Date().toDateString();
+        const now = new Date();
+
         Object.keys(d).forEach(k => {
             const i = d[k];
-            const t = new Date().toDateString();
-            div.innerHTML += `<div class="card">
-                <b>₹${i.amount}</b> | +₹${i.dailyProfit}
-                <button onclick="clP('${k}',${i.dailyProfit})" ${i.lastClaim===t?'disabled':''} style="float:right; padding:5px; background:#f39c12">Profit</button>
+            const isClaimedToday = i.lastClaim === today;
+            const expiry = new Date(i.expiryDate);
+            const isExpired = now >= expiry;
+
+            // --- DOUBLE RETURN LOGIC ---
+            if (isExpired && i.principalReturned === false) {
+                // Return DOUBLE money automatically
+                const doubleReturn = i.amount * 2;
+                update(ref(db, 'users/'+currentUser+'/investments/'+k), { principalReturned: true });
+                update(ref(db, 'users/'+currentUser), { balance: userData.balance + doubleReturn });
+                alert("আপনার প্ল্যানের মেয়াদ শেষ! দ্বিগুণ টাকা (₹"+doubleReturn+") ব্যালেন্সে যুক্ত হয়েছে!");
+            }
+            // ---------------------------
+
+            let statusHTML = "";
+            if(isExpired) {
+                statusHTML = `<span style="color:#e74c3c; font-weight:bold;">মেয়াদ শেষ (Unlocked)</span>`;
+            } else {
+                statusHTML = `<span style="color:#f39c12; font-weight:bold;">Locked (Active)</span>`;
+            }
+
+            div.innerHTML += `
+            <div class="card" style="border-left:5px solid ${isExpired ? '#e74c3c' : '#6c5ce7'};">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <b>${i.planName || 'Investment'}</b><br>
+                        <small>Invest: ₹${i.amount}</small><br>
+                        <small style="font-size:10px;">Status: ${statusHTML}</small>
+                    </div>
+                    <div style="text-align:right;">
+                        <span style="color:green; font-weight:bold;">+₹${i.dailyProfit}</span><br>
+                        ${!isExpired ? `
+                        <button onclick="claimProfit('${k}', ${i.dailyProfit})" 
+                            style="padding:5px 10px; font-size:11px; width:auto; margin-top:5px; background:${isClaimedToday ? '#95a5a6' : '#f39c12'}" 
+                            ${isClaimedToday ? 'disabled' : ''}>
+                            ${isClaimedToday ? 'Claimed' : 'Claim Profit'}
+                        </button>` : ''}
+                    </div>
+                </div>
             </div>`;
         });
-        window.clP = (k,p) => {
-            update(ref(db, 'users/'+currentUser), { balance:userData.balance+p });
-            update(ref(db, 'users/'+currentUser+'/investments/'+k), { lastClaim:new Date().toDateString() });
-        }
+        window.claimProfit = claimProfit;
+    }
+
+    window.payNow = () => {
+        const amt = document.getElementById('dep-amount').value;
+        if(amt) window.location.href = `upi://pay?pa=yourupi@upi&pn=App&am=${amt}&cu=INR`;
+    }
+    window.submitDeposit = () => {
+        const amt = parseInt(document.getElementById('dep-amount').value);
+        const utr = document.getElementById('dep-utr').value;
+        if(!amt || !utr) return alert("তথ্য দিন");
+        push(ref(db, 'deposits'), { user: currentUser, amount: amt, utr: utr, status: 'pending' });
+        alert("রিকোয়েস্ট পাঠানো হয়েছে!"); navTo('home');
+    }
+    window.submitWithdraw = () => {
+        const amt = parseInt(document.getElementById('with-amount').value);
+        const upi = document.getElementById('with-upi').value;
+        if(!amt || !upi) return alert("সব তথ্য পূরণ করুন");
+        if(amt < 100) return alert("মিনিমাম ১০০ টাকা");
+        if(amt > userData.balance) return alert("ব্যালেন্স নেই");
+        update(ref(db, 'users/' + currentUser), { balance: userData.balance - amt });
+        push(ref(db, 'withdrawals'), { user: currentUser, amount: amt, upi: upi, status: 'pending' });
+        alert("সফল! এডমিন চেক করবে।");
+        document.getElementById('with-amount').value = "";
     }
 
     window.navTo = (id, elm) => {
@@ -427,7 +521,6 @@
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
         if(elm) elm.classList.add('active');
     }
-    window.openPage = (id) => navTo(id);
 </script>
 </body>
 </html>
