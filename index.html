@@ -3,228 +3,175 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Smart Invest App</title>
+    <title>Smart Invest User</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap');
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Hind Siliguri', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background: #f0f2f5; display: flex; justify-content: center; min-height: 100vh; }
         
-        /* Container */
         .app-container { width: 100%; max-width: 480px; background: white; height: 100vh; display: flex; flex-direction: column; position: relative; overflow: hidden; }
+        
+        /* Auth Screens */
+        .auth-screen { position: absolute; top:0; left:0; width:100%; height:100%; background:white; z-index:1000; display:flex; flex-direction:column; justify-content:center; padding:30px; }
         .hidden { display: none !important; }
-
-        /* --- Authentication Styles --- */
-        .auth-screen {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: white; z-index: 1000; display: flex; flex-direction: column;
-            justify-content: center; padding: 30px;
-        }
-        .auth-header { text-align: center; margin-bottom: 30px; }
-        .auth-header i { font-size: 50px; color: #6c5ce7; margin-bottom: 10px; }
-        .auth-header h2 { color: #333; }
         
-        .auth-form input {
-            width: 100%; padding: 14px; margin-bottom: 15px; border: 1px solid #ddd;
-            border-radius: 10px; background: #f9f9f9; outline: none; font-size: 16px;
-        }
-        .auth-btn {
-            width: 100%; padding: 14px; background: #6c5ce7; color: white; border: none;
-            border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer;
-            box-shadow: 0 4px 10px rgba(108, 92, 231, 0.3); transition: 0.2s;
-        }
-        .auth-btn:disabled { background: #95a5a6; cursor: not-allowed; }
-        .auth-btn:active { transform: scale(0.98); }
-        
-        .toggle-link {
-            text-align: center; margin-top: 15px; color: #666; font-size: 14px;
-        }
-        .toggle-link span { color: #6c5ce7; font-weight: bold; cursor: pointer; text-decoration: underline; }
-
-        /* --- Main App Styles --- */
-        .header { background: #6c5ce7; padding: 15px 20px; color: white; display: flex; justify-content: space-between; align-items: center; }
-        .content { flex: 1; overflow-y: auto; padding: 15px; padding-bottom: 80px; }
-        .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 15px; border: 1px solid #f1f2f6; }
-        
-        .page { display: none; }
-        .page.active { display: block; animation: fadeIn 0.3s; }
-        @keyframes fadeIn { from {opacity:0; transform:translateY(10px);} to {opacity:1; transform:translateY(0);} }
-
-        /* Inputs & Buttons inside App */
-        .app-input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin: 8px 0; font-size: 16px; outline: none; background: #f9f9f9; }
-        .app-btn { width: 100%; padding: 12px; border: none; background: #6c5ce7; color: white; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; }
-        
-        /* Navigation */
-        .nav { position: absolute; bottom: 0; width: 100%; height: 70px; background: white; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #eee; z-index: 500; }
-        .nav-item { text-align: center; color: #95a5a6; font-size: 11px; width: 100%; padding: 10px; }
-        .nav-item.active { color: #6c5ce7; font-weight: bold; }
-        .nav-item i { font-size: 22px; display: block; margin-bottom: 5px; }
-
         /* Chat Screen */
         .chat-screen { position: absolute; top:0; left:0; width:100%; height:100%; background:white; z-index:800; display:none; flex-direction:column; }
         .chat-header { background:#6c5ce7; padding:15px; color:white; display:flex; align-items:center; gap:10px; }
         .chat-body { flex:1; overflow-y:auto; padding:15px; background:#f0f2f5; display:flex; flex-direction:column; gap:10px; }
         .chat-footer { padding:10px; border-top:1px solid #ddd; display:flex; gap:10px; }
-        .msg { padding: 10px 15px; border-radius: 15px; max-width: 75%; font-size: 14px; word-wrap: break-word; margin-bottom: 5px; }
+        
+        .msg { padding: 10px 15px; border-radius: 15px; max-width: 75%; font-size: 14px; word-wrap: break-word; }
         .msg.user { background: #6c5ce7; color: white; align-self: flex-end; }
         .msg.admin { background: white; color: #333; align-self: flex-start; border: 1px solid #ddd; }
+
+        /* Main Styles */
+        .header { background: #6c5ce7; padding: 15px 20px; color: white; display: flex; justify-content: space-between; align-items: center; }
+        .content { flex: 1; overflow-y: auto; padding: 15px; padding-bottom: 80px; }
+        .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 15px; border: 1px solid #f1f2f6; }
+        .page { display: none; }
+        .page.active { display: block; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from {opacity:0; transform:translateY(10px);} to {opacity:1; transform:translateY(0);} }
+
+        input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin: 8px 0; font-size: 16px; outline: none; background: #f9f9f9; }
+        button { width: 100%; padding: 12px; border: none; background: #6c5ce7; color: white; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; }
+        
+        .nav { position: absolute; bottom: 0; width: 100%; height: 70px; background: white; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #eee; z-index: 500; }
+        .nav-item { text-align: center; color: #95a5a6; font-size: 11px; width: 100%; padding: 10px; }
+        .nav-item.active { color: #6c5ce7; font-weight: bold; }
+        .nav-item i { font-size: 22px; display: block; margin-bottom: 5px; }
     </style>
 </head>
 <body>
 
 <div class="app-container">
-
-    <!-- 1. AUTHENTICATION SCREEN -->
-    <div id="auth-screen" class="auth-screen">
-        
-        <!-- Login Form -->
-        <div id="login-box">
-            <div class="auth-header">
-                <i class="fas fa-wallet"></i>
-                <h2>লগইন করুন</h2>
-                <p>আপনার অ্যাকাউন্টে প্রবেশ করুন</p>
-            </div>
-            <div class="auth-form">
-                <input type="number" id="login-phone" placeholder="মোবাইল নাম্বার">
-                <input type="password" id="login-pass" placeholder="পাসওয়ার্ড">
-                <button class="auth-btn" id="btn-login">লগইন</button>
-            </div>
-            <div class="toggle-link">
-                অ্যাকাউন্ট নেই? <span onclick="window.toggleAuth('register')">নতুন প্রোফাইল খুলুন</span>
-            </div>
-        </div>
-
-        <!-- Register Form -->
-        <div id="register-box" class="hidden">
-            <div class="auth-header">
-                <i class="fas fa-user-plus"></i>
-                <h2>প্রোফাইল খুলুন</h2>
-                <p>নতুন অ্যাকাউন্ট তৈরি করুন</p>
-            </div>
-            <div class="auth-form">
-                <input type="text" id="reg-name" placeholder="আপনার নাম">
-                <input type="number" id="reg-phone" placeholder="মোবাইল নাম্বার (Login ID)">
-                <input type="password" id="reg-pass" placeholder="গোপন পাসওয়ার্ড">
-                <button class="auth-btn" id="btn-register">রেজিস্টার করুন</button>
-            </div>
-            <div class="toggle-link">
-                আগেই অ্যাকাউন্ট আছে? <span onclick="window.toggleAuth('login')">লগইন করুন</span>
-            </div>
-        </div>
-
+    
+    <!-- 1. Login Screen -->
+    <div id="login-screen" class="auth-screen">
+        <h2 style="text-align:center; color:#6c5ce7;">লগিন করুন</h2>
+        <input type="number" id="log-phone" placeholder="মোবাইল নাম্বার">
+        <input type="password" id="log-pass" placeholder="পাসওয়ার্ড">
+        <button onclick="loginUser()">প্রবেশ করুন</button>
+        <p style="text-align:center; margin-top:20px;">একাউন্ট নেই? <a href="#" onclick="showRegister()" style="color:#6c5ce7; font-weight:bold;">রেজিস্টার করুন</a></p>
     </div>
 
-    <!-- 2. MAIN APP DASHBOARD -->
+    <!-- 2. Register Screen -->
+    <div id="register-screen" class="auth-screen hidden">
+        <h2 style="text-align:center; color:#6c5ce7;">একাউন্ট খুলুন</h2>
+        <input type="text" id="reg-name" placeholder="আপনার নাম">
+        <input type="number" id="reg-phone" placeholder="মোবাইল নাম্বার">
+        <input type="email" id="reg-email" placeholder="ইমেইল এড্রেস">
+        <input type="password" id="reg-pass" placeholder="গোপন পাসওয়ার্ড">
+        <input type="number" id="reg-refer" placeholder="রেফার কোড (Optional)">
+        <button onclick="registerUser()">রেজিস্টার</button>
+        <p style="text-align:center; margin-top:20px;">একাউন্ট আছে? <a href="#" onclick="showLogin()" style="color:#6c5ce7; font-weight:bold;">লগিন করুন</a></p>
+    </div>
+
+    <!-- 3. Help Chat Screen -->
+    <div id="chat-screen" class="chat-screen">
+        <div class="chat-header">
+            <i class="fas fa-arrow-left" onclick="closeChat()" style="cursor:pointer; font-size:20px;"></i>
+            <span>এডমিন সাপোর্ট</span>
+        </div>
+        <div id="chat-body" class="chat-body">
+            <div class="msg admin">হ্যালো! কিভাবে সাহায্য করতে পারি?</div>
+        </div>
+        <div class="chat-footer">
+            <input type="text" id="chat-inp" placeholder="আপনার সমস্যা লিখুন..." style="margin:0; flex:1;">
+            <button onclick="sendChat()" style="width:auto; padding:10px 20px;"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <!-- 4. Main App -->
     <div id="main-app" class="hidden" style="height: 100%; flex-direction: column;">
-        
-        <!-- Header -->
         <div class="header">
-            <div><small>বর্তমান ব্যালেন্স</small><h2 id="header-balance">₹ 0</h2></div>
+            <div><small>ব্যালেন্স</small><h2 id="header-balance">₹ 0</h2></div>
             <div id="status-badge" style="background: rgba(255,255,255,0.2); padding: 5px 12px; border-radius: 20px; font-size: 11px;">Unverified</div>
         </div>
 
-        <!-- Content Area -->
         <div class="content">
-            
-            <!-- Home Tab -->
+            <!-- Home -->
             <div id="home" class="page active">
                 <div class="card" style="background: #fff8e1; border: 1px solid #ffe082; display: flex; justify-content: space-between; align-items: center;">
                     <div><h4 style="color: #f39c12; margin:0;">ডেইলি বোনাস</h4><small>প্রতিদিন ১০ টাকা</small></div>
-                    <button onclick="window.claimBonus()" style="width: auto; background: #f39c12; padding: 5px 15px; color: white; border-radius:20px; border:none;">Claim</button>
+                    <button onclick="claimBonus()" style="width: auto; background: #f39c12; padding: 5px 15px; color: white; border-radius:20px;">Claim</button>
                 </div>
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
-                    <div onclick="window.openPage('deposit')" class="card" style="text-align: center; background: #e8f6ef; border: 1px solid #2ecc71; color: #27ae60; cursor:pointer;">
+                    <div onclick="openPage('deposit')" class="card" style="text-align: center; background: #e8f6ef; border: 1px solid #2ecc71; color: #27ae60; cursor:pointer;">
                         <i class="fas fa-plus-circle" style="font-size: 24px;"></i><br>ডিপোজিট
                     </div>
-                    <div onclick="window.openPage('withdraw')" class="card" style="text-align: center; background: #ffebee; border: 1px solid #e74c3c; color: #c0392b; cursor:pointer;">
+                    <div onclick="openPage('withdraw')" class="card" style="text-align: center; background: #ffebee; border: 1px solid #e74c3c; color: #c0392b; cursor:pointer;">
                         <i class="fas fa-download" style="font-size: 24px;"></i><br>উত্তোলন
                     </div>
                 </div>
                 <h4>একটিভ প্ল্যান</h4>
-                <div id="active-investments"><p style="text-align:center; color:#aaa;">কোন প্ল্যান নেই</p></div>
+                <div id="active-investments"><p style="text-align:center; color:#aaa;">খালি</p></div>
             </div>
 
-            <!-- Deposit Tab -->
+            <!-- Deposit -->
             <div id="deposit" class="page">
                 <h3>টাকা জমা করুন</h3>
                 <div class="card">
-                    <input type="number" id="dep-amount" class="app-input" placeholder="টাকার পরিমাণ">
-                    <button onclick="window.payNow()" class="app-btn" style="background: #27ae60; margin-bottom: 10px;">UPI Payment</button>
-                    <input type="text" id="dep-utr" class="app-input" placeholder="UTR Number">
-                    <button onclick="window.submitDeposit()" class="app-btn" style="background: #34495e;">Submit</button>
+                    <input type="number" id="dep-amount" placeholder="টাকার পরিমাণ">
+                    <button onclick="payNow()" style="background: #27ae60; margin-bottom: 10px;">UPI Payment</button>
+                    <input type="text" id="dep-utr" placeholder="UTR Number">
+                    <button onclick="submitDeposit()" style="background: #34495e;">Submit</button>
                 </div>
             </div>
 
-            <!-- Withdraw Tab -->
+            <!-- Withdraw -->
             <div id="withdraw" class="page">
                 <h3>টাকা উত্তোলন</h3>
                 <div class="card">
                     <p style="text-align:center;">ব্যালেন্স: <span id="with-bal">0</span></p>
-                    <input type="number" id="with-amount" class="app-input" placeholder="পরিমাণ">
-                    <input type="text" id="with-upi" class="app-input" placeholder="বিকাশ/নগদ নাম্বার">
-                    <button onclick="window.submitWithdraw()" class="app-btn" style="background: #e74c3c;">Withdraw</button>
+                    <input type="number" id="with-amount" placeholder="পরিমাণ">
+                    <input type="text" id="with-upi" placeholder="বিকাশ/নগদ নাম্বার">
+                    <button onclick="submitWithdraw()" style="background: #e74c3c;">Withdraw</button>
                 </div>
             </div>
 
-            <!-- Invest Tab -->
+            <!-- Profile -->
+            <div id="profile" class="page">
+                <div class="card" style="text-align: center;">
+                    <i class="fas fa-user-circle" style="font-size: 60px; color: #ddd;"></i>
+                    <h3 id="profile-name" style="margin-top: 10px;">User</h3>
+                    <p id="profile-phone">...</p>
+                    
+                    <!-- Help Button -->
+                    <button onclick="openChat()" style="background: #3498db; margin-top:10px; border-radius:20px;">
+                        <i class="fas fa-headset"></i> হেল্প সেন্টার (Live Chat)
+                    </button>
+
+                    <div style="margin-top: 20px; background: #f8f9fa; padding: 15px; border-radius: 10px; text-align: left;">
+                        <p style="color: #6c5ce7; font-weight: bold;">রেফার কোড: <span id="my-refer-code" style="color:black">...</span></p>
+                    </div>
+
+                    <button onclick="location.reload()" style="background: #636e72; margin-top: 20px;">লগ আউট</button>
+                </div>
+            </div>
+
+            <!-- Invest -->
             <div id="invest" class="page">
                 <div id="plans-container"></div>
             </div>
-
-            <!-- Profile Tab -->
-            <div id="profile" class="page">
-                <div class="card" style="text-align: center;">
-                    <i class="fas fa-user-circle" style="font-size: 70px; color: #6c5ce7; margin-bottom: 10px;"></i>
-                    <h2 id="profile-name">User Name</h2>
-                    <p id="profile-phone" style="color: #666; margin-bottom: 20px;">0000000000</p>
-                    
-                    <button onclick="window.openChat()" class="app-btn" style="background: #3498db; margin-bottom:10px; border-radius:30px;">
-                        <i class="fas fa-headset"></i> লাইভ চ্যাট সাপোর্ট
-                    </button>
-
-                    <div style="margin-top: 15px; background: #f8f9fa; padding: 15px; border-radius: 10px; text-align: left; border: 1px solid #eee;">
-                        <p style="font-size: 14px; color: #555;">রেফার কোড: <strong id="my-refer-code">...</strong></p>
-                        <p style="font-size: 14px; color: #555; margin-top:5px;">মেম্বার স্ট্যাটাস: <strong id="profile-status">...</strong></p>
-                    </div>
-
-                    <button onclick="window.logoutApp()" class="app-btn" style="background: #e74c3c; margin-top: 25px;">
-                        <i class="fas fa-sign-out-alt"></i> লগ আউট করুন
-                    </button>
-                </div>
-            </div>
         </div>
 
-        <!-- Bottom Navigation -->
         <div class="nav">
-            <div class="nav-item active" onclick="window.navTo('home', this)"><i class="fas fa-home"></i>Home</div>
-            <div class="nav-item" onclick="window.navTo('deposit', this)"><i class="fas fa-wallet"></i>Wallet</div>
-            <div class="nav-item" onclick="window.navTo('invest', this)"><i class="fas fa-chart-line"></i>Invest</div>
-            <div class="nav-item" onclick="window.navTo('profile', this)"><i class="fas fa-user"></i>Profile</div>
+            <div class="nav-item active" onclick="navTo('home', this)"><i class="fas fa-home"></i>Home</div>
+            <div class="nav-item" onclick="navTo('deposit', this)"><i class="fas fa-wallet"></i>Wallet</div>
+            <div class="nav-item" onclick="navTo('invest', this)"><i class="fas fa-chart-line"></i>Invest</div>
+            <div class="nav-item" onclick="navTo('profile', this)"><i class="fas fa-user"></i>Profile</div>
         </div>
     </div>
-
-    <!-- 3. CHAT MODAL -->
-    <div id="chat-screen" class="chat-screen">
-        <div class="chat-header">
-            <i class="fas fa-arrow-left" onclick="window.closeChat()" style="cursor:pointer; font-size:20px;"></i>
-            <span>এডমিন সাপোর্ট</span>
-        </div>
-        <div id="chat-body" class="chat-body"></div>
-        <div class="chat-footer">
-            <input type="text" id="chat-inp" class="app-input" placeholder="লিখুন..." style="margin:0; flex:1;">
-            <button onclick="window.sendChat()" style="width:auto; padding:10px 20px;" class="app-btn"><i class="fas fa-paper-plane"></i></button>
-        </div>
-    </div>
-
 </div>
 
-<!-- LOGIC SCRIPTS -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-    import { getDatabase, ref, set, onValue, update, push, get, child } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
+    import { getDatabase, ref, set, onValue, update, push, remove, get } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
 
-    // --- CONFIGURATION ---
+    // --- NEW CONFIGURATION ---
     const firebaseConfig = {
       apiKey: "AIzaSyC_7lvHpyLYGCd0EO9YsyM_4U-GnACA3pg",
       authDomain: "smart-invest-money.firebaseapp.com",
@@ -236,137 +183,100 @@
       measurementId: "G-3H816FZ73F"
     };
 
-    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
-    const dbRef = ref(db);
     let currentUser = null;
     let userData = {};
 
-    // --- AUTHENTICATION & STARTUP ---
+    // 1. SWITCHING SCREENS
+    window.showRegister = () => {
+        document.getElementById('login-screen').classList.add('hidden');
+        document.getElementById('register-screen').classList.remove('hidden');
+    }
+    window.showLogin = () => {
+        document.getElementById('register-screen').classList.add('hidden');
+        document.getElementById('login-screen').classList.remove('hidden');
+    }
 
-    // 1. Check Login Status on Load
-    document.addEventListener("DOMContentLoaded", () => {
-        const savedUser = localStorage.getItem('smart_invest_login');
-        if (savedUser) {
-            currentUser = savedUser;
-            showMainApp(); // Auto login if saved
-        } else {
-            document.getElementById('auth-screen').classList.remove('hidden');
-        }
+    // 2. REGISTRATION LOGIC
+    window.registerUser = async function() {
+        const name = document.getElementById('reg-name').value;
+        const phone = document.getElementById('reg-phone').value;
+        const email = document.getElementById('reg-email').value;
+        const pass = document.getElementById('reg-pass').value;
+        const refer = document.getElementById('reg-refer').value;
 
-        // Attach listeners manually for safety
-        document.getElementById('btn-register').addEventListener('click', handleRegister);
-        document.getElementById('btn-login').addEventListener('click', handleLogin);
-    });
+        if(!name || !phone || !email || !pass) return alert("দয়া করে সব তথ্য পূরণ করুন");
+        if(phone.length < 10) return alert("সঠিক ১০ সংখ্যার মোবাইল নাম্বার দিন");
 
-    // 2. Register Logic
-    async function handleRegister() {
-        const name = document.getElementById('reg-name').value.trim();
-        const phone = document.getElementById('reg-phone').value.trim();
-        const pass = document.getElementById('reg-pass').value.trim();
-        const btn = document.getElementById('btn-register');
-
-        // Validation
-        if(!name || !phone || !pass) return alert("সব তথ্য পূরণ করুন!");
-        if(phone.length < 10) return alert("সঠিক মোবাইল নাম্বার দিন (১০ ডিজিট)!");
-
-        // Loading State
-        btn.innerText = "অপেক্ষা করুন...";
-        btn.disabled = true;
-
+        const userRef = ref(db, 'users/' + phone);
+        
         try {
-            // Check if user already exists
-            const snapshot = await get(child(dbRef, `users/${phone}`));
-            
-            if (snapshot.exists()) {
-                alert("⚠️ এই নাম্বারে আগেই অ্যাকাউন্ট খোলা আছে!\nদয়া করে লগইন করুন।");
-                window.toggleAuth('login');
+            const snapshot = await get(userRef);
+            if(snapshot.exists()) {
+                alert("এই নাম্বার দিয়ে আগেই একাউন্ট খোলা আছে। দয়া করে লগিন করুন।");
+                showLogin();
             } else {
-                // Create New User in Database
-                await set(ref(db, 'users/' + phone), {
+                let data = {
                     name: name,
                     phone: phone,
+                    email: email,
                     password: pass,
                     balance: 0,
                     hasDeposited: false
-                });
-
-                // Auto Login Process
-                currentUser = phone;
-                localStorage.setItem('smart_invest_login', phone);
-
-                // Success Message & Redirect
-                alert("✅ অভিনন্দন! প্রোফাইল তৈরি সফল হয়েছে।\nঅ্যাপে প্রবেশ করা হচ্ছে...");
+                };
+                if(refer && refer !== phone) {
+                    data.referredBy = refer;
+                    data.referralBonusPaid = false;
+                }
                 
-                // Switch to App
-                showMainApp();
+                await set(userRef, data);
+                alert("রেজিস্ট্রেশন সফল! এখন লগিন করুন।");
+                showLogin();
             }
         } catch (error) {
             console.error(error);
-            alert("❌ সমস্যা হয়েছে: " + error.message + "\nআপনার ইন্টারনেট চেক করুন।");
+            alert("সমস্যা হয়েছে: " + error.message);
         }
-        
-        // Reset Button
-        btn.innerText = "রেজিস্টার করুন";
-        btn.disabled = false;
     }
 
-    // 3. Login Logic
-    async function handleLogin() {
-        const phone = document.getElementById('login-phone').value.trim();
-        const pass = document.getElementById('login-pass').value.trim();
-        const btn = document.getElementById('btn-login');
+    // 3. LOGIN LOGIC
+    window.loginUser = async function() {
+        const phone = document.getElementById('log-phone').value;
+        const pass = document.getElementById('log-pass').value;
 
-        if(!phone || !pass) return alert("মোবাইল ও পাসওয়ার্ড দিন!");
+        if(!phone || !pass) return alert("মোবাইল নাম্বার ও পাসওয়ার্ড দিন");
 
-        btn.innerText = "চেক করা হচ্ছে...";
-        btn.disabled = true;
+        const userRef = ref(db, 'users/' + phone);
 
         try {
-            const snapshot = await get(child(dbRef, `users/${phone}`));
-            if (snapshot.exists()) {
+            const snapshot = await get(userRef);
+            if(snapshot.exists()) {
                 const data = snapshot.val();
-                if (data.password === pass) {
+                // Simple password check
+                if(data.password == pass) {
                     currentUser = phone;
-                    localStorage.setItem('smart_invest_login', phone);
-                    showMainApp();
+                    userData = data;
+                    document.getElementById('login-screen').classList.add('hidden');
+                    document.getElementById('main-app').classList.remove('hidden');
+                    document.getElementById('main-app').style.display = 'flex';
+                    
+                    // Start Listening for Live Updates
+                    startLiveUpdates(phone);
+                    loadApp();
                 } else {
-                    alert("❌ ভুল পাসওয়ার্ড!");
+                    alert("ভুল পাসওয়ার্ড দিয়েছেন!");
                 }
             } else {
-                alert("❌ অ্যাকাউন্ট পাওয়া যায়নি। রেজিস্টার করুন।");
+                alert("এই নাম্বারে কোনো একাউন্ট নেই। রেজিস্টার করুন।");
             }
-        } catch(e) {
-            alert("❌ লগইন সমস্যা: " + e.message);
+        } catch (error) {
+            console.error(error);
+            alert("লগিন সমস্যা: " + error.message);
         }
-
-        btn.innerText = "লগইন";
-        btn.disabled = false;
     }
 
-    // 4. Show Main App Screen
-    function showMainApp() {
-        document.getElementById('auth-screen').style.display = 'none';
-        document.getElementById('main-app').classList.remove('hidden');
-        document.getElementById('main-app').style.display = 'flex';
-        
-        // Clear Auth Inputs
-        document.getElementById('reg-name').value = '';
-        document.getElementById('reg-phone').value = '';
-        document.getElementById('reg-pass').value = '';
-        document.getElementById('login-phone').value = '';
-        document.getElementById('login-pass').value = '';
-
-        // Load App Data
-        startLiveUpdates(currentUser);
-        renderPlans();
-        initChat();
-    }
-
-    // --- APP FEATURES ---
-
-    // Realtime Data Sync
+    // LIVE UPDATES
     function startLiveUpdates(phone) {
         onValue(ref(db, 'users/' + phone), (snap) => {
             if(snap.exists()) {
@@ -376,74 +286,37 @@
         });
     }
 
+    function loadApp() {
+        renderPlans();
+        updateUI();
+        initChat();
+    }
+
     function updateUI() {
         document.getElementById('header-balance').innerText = "₹ " + (userData.balance||0);
         document.getElementById('with-bal').innerText = (userData.balance||0);
-        document.getElementById('profile-name').innerText = userData.name || "User";
+        document.getElementById('profile-name').innerText = userData.name;
         document.getElementById('profile-phone').innerText = userData.phone;
         document.getElementById('my-refer-code').innerText = userData.phone;
 
         const badge = document.getElementById('status-badge');
-        const pStatus = document.getElementById('profile-status');
-        
         if(userData.hasDeposited) {
-            badge.innerText = "Verified"; badge.style.background = "#2ecc71";
-            pStatus.innerText = "Verified Member ✅"; pStatus.style.color = "green";
-        } else {
-            badge.innerText = "Unverified"; badge.style.background = "rgba(255,255,255,0.2)";
-            pStatus.innerText = "Not Verified ⚠️"; pStatus.style.color = "orange";
+            badge.innerText = "Verified";
+            badge.style.background = "#2ecc71";
         }
-        
         loadInvestments(userData.investments);
     }
 
-    // GLOBAL FUNCTIONS (Attached to Window for HTML onclick)
-    
-    // Auth Toggle
-    window.toggleAuth = (type) => {
-        if(type === 'register') {
-            document.getElementById('login-box').style.display = 'none';
-            document.getElementById('register-box').classList.remove('hidden');
-            document.getElementById('register-box').style.display = 'block';
-        } else {
-            document.getElementById('register-box').style.display = 'none';
-            document.getElementById('login-box').style.display = 'block';
-        }
-    };
-
-    // Logout
-    window.logoutApp = () => {
-        if(confirm("আপনি কি লগ আউট করতে চান?")) {
-            localStorage.removeItem('smart_invest_login');
-            location.reload();
-        }
-    };
-
-    // Navigation
-    window.navTo = function(pageId, el) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.getElementById(pageId).classList.add('active');
-        if(el) {
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            el.classList.add('active');
-        }
-    };
-    window.openPage = (p) => {
-        window.navTo(p);
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        if(p==='deposit' || p==='withdraw') {
-             document.querySelectorAll('.nav-item')[1].classList.add('active');
-        }
-    };
+    // --- OTHER FEATURES ---
 
     // Chat
     window.openChat = () => {
         document.getElementById('chat-screen').style.display = 'flex';
         const b = document.getElementById('chat-body');
         b.scrollTop = b.scrollHeight;
-    };
+    }
     window.closeChat = () => document.getElementById('chat-screen').style.display = 'none';
-    
+
     function initChat() {
         if(!currentUser) return;
         onValue(ref(db, 'support_chats/' + currentUser), (snap) => {
@@ -458,18 +331,24 @@
             }
         });
     }
+
     window.sendChat = function() {
         const txt = document.getElementById('chat-inp').value;
         if(!txt) return;
-        push(ref(db, 'support_chats/' + currentUser), { sender: 'user', text: txt, time: Date.now() });
+        push(ref(db, 'support_chats/' + currentUser), {
+            sender: 'user',
+            text: txt,
+            time: Date.now()
+        });
         document.getElementById('chat-inp').value = '';
-    };
+    }
 
-    // Investments & Money
+    // Plans
     const plans = [
         { p: 1000, d: 25 }, { p: 2000, d: 55 }, { p: 5000, d: 140 }, 
         { p: 10000, d: 300 }, { p: 25000, d: 800 }, { p: 50000, d: 1700 }
     ];
+
     function renderPlans() {
         const c = document.getElementById('plans-container');
         c.innerHTML = "";
@@ -477,64 +356,78 @@
             c.innerHTML += `<div class="card" style="border-left:5px solid #6c5ce7; display:flex; justify-content:space-between; align-items:center;">
                 <div><b>₹${i.p}</b><br><small>৩০ দিন</small></div>
                 <div style="text-align:right; color:green;"><b>+₹${i.d}</b>/day</div>
-                <button onclick="window.buyPlan(${i.p},${i.d})" class="app-btn" style="padding:5px 10px; font-size:12px; width:auto;">Buy</button>
+                <button onclick="buyPlan(${i.p},${i.d})" style="padding:5px 10px; font-size:12px;">Buy</button>
             </div>`;
         });
+        window.buyPlan = buyPlan;
     }
 
-    window.buyPlan = function(price, daily) {
-        if((userData.balance||0) < price) return alert("❌ পর্যাপ্ত ব্যালেন্স নেই! দয়া করে ডিপোজিট করুন।");
-        update(ref(db, 'users/' + currentUser), { balance: userData.balance - price });
-        const u = new Date(); u.setDate(u.getDate()+30);
-        push(ref(db, 'users/'+currentUser+'/investments'), { amount:price, dailyProfit:daily, unlockDate:u.toDateString() });
-        alert("✅ প্ল্যান কেনা সফল হয়েছে!"); window.navTo('home');
-    };
-
+    // Financial Actions
     window.payNow = () => {
         const amt = document.getElementById('dep-amount').value;
         if(!amt) return alert("টাকার পরিমাণ দিন");
-        // UPI Payment Link
         window.location.href = `upi://pay?pa=barshabhattacharjee019-1@okaxis&pn=InvestApp&am=${amt}&cu=INR`;
-    };
+    }
 
     window.submitDeposit = () => {
         const amt = parseInt(document.getElementById('dep-amount').value);
         const utr = document.getElementById('dep-utr').value;
-        if(!utr || !amt) return alert("UTR এবং টাকার পরিমাণ সঠিক দিন");
+        if(!utr || !amt) return alert("সব তথ্য দিন");
         push(ref(db, 'deposits'), { user: currentUser, amount: amt, utr: utr, status: 'pending' });
-        alert("✅ ডিপোজিট রিকোয়েস্ট পাঠানো হয়েছে!"); window.navTo('home');
-    };
+        alert("রিকোয়েস্ট পাঠানো হয়েছে!"); navTo('home');
+    }
 
     window.submitWithdraw = () => {
-        if(!userData.hasDeposited) return alert("⚠️ টাকা তোলার আগে অন্তত একবার ডিপোজিট করে ভেরিফাই করুন।");
+        if(!userData.hasDeposited) return alert("আগে ডিপোজিট করুন");
         const amt = parseInt(document.getElementById('with-amount').value);
         const upi = document.getElementById('with-upi').value;
-        if(amt > userData.balance) return alert("❌ ব্যালেন্স নেই");
+        if(amt > userData.balance) return alert("ব্যালেন্স নেই");
         update(ref(db, 'users/' + currentUser), { balance: userData.balance - amt });
         push(ref(db, 'withdrawals'), { user: currentUser, amount: amt, upi: upi, status: 'pending' });
-        alert("✅ উইথড্র রিকোয়েস্ট পাঠানো হয়েছে!"); window.navTo('home');
-    };
+        alert("রিকোয়েস্ট পাঠানো হয়েছে!"); navTo('home');
+    }
 
     window.claimBonus = () => {
-        if(!userData.hasDeposited) return alert("⚠️ বোনাস পাওয়ার জন্য অ্যাকাউন্ট ভেরিফাই করুন (ডিপোজিট করুন)।");
+        if(!userData.hasDeposited) return alert("আগে ডিপোজিট করুন");
         const t = new Date().toDateString();
-        if(userData.lastBonus === t) return alert("❌ আজকের বোনাস নেওয়া শেষ!");
+        if(userData.lastBonus === t) return alert("আজকেরটা নেওয়া শেষ");
         update(ref(db, 'users/' + currentUser), { balance: userData.balance + 10, lastBonus: t });
-        alert("🎉 ১০ টাকা বোনাস যোগ হয়েছে!");
-    };
+        alert("১০ টাকা যোগ হয়েছে!");
+    }
+
+    function buyPlan(price, daily) {
+        if((userData.balance||0) < price) return alert("ব্যালেন্স নেই");
+        update(ref(db, 'users/' + currentUser), { balance: userData.balance - price });
+        const u = new Date(); u.setDate(u.getDate()+30);
+        push(ref(db, 'users/'+currentUser+'/investments'), { amount:price, dailyProfit:daily, unlockDate:u.toDateString(), lastClaim:'' });
+        alert("সফল হয়েছে!"); navTo('home');
+    }
 
     function loadInvestments(d) {
         const div = document.getElementById('active-investments');
         div.innerHTML = "";
-        if(!d) { div.innerHTML = "<p style='text-align:center; color:#aaa;'>খালি</p>"; return; }
+        if(!d) { div.innerHTML = "<p style='text-align:center'>খালি</p>"; return; }
         Object.keys(d).forEach(k => {
             const i = d[k];
+            const t = new Date().toDateString();
             div.innerHTML += `<div class="card">
-                <b>₹${i.amount}</b> | +₹${i.dailyProfit} / day
+                <b>₹${i.amount}</b> | +₹${i.dailyProfit}
+                <button onclick="clP('${k}',${i.dailyProfit})" ${i.lastClaim===t?'disabled':''} style="float:right; padding:5px; background:#f39c12">Profit</button>
             </div>`;
         });
+        window.clP = (k,p) => {
+            update(ref(db, 'users/'+currentUser), { balance:userData.balance+p });
+            update(ref(db, 'users/'+currentUser+'/investments/'+k), { lastClaim:new Date().toDateString() });
+        }
     }
 
+    window.navTo = (id, elm) => {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        if(elm) elm.classList.add('active');
+    }
+    window.openPage = (id) => navTo(id);
 </script>
 </body>
 </html>
